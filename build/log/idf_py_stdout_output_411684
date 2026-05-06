@@ -1,0 +1,135 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3818,len:0x1750
+load:0x403c9700,len:0x4
+load:0x403c9704,len:0xc00
+load:0x403cc700,len:0x2e0c
+entry 0x403c9908
+[0;32mI (27) boot: ESP-IDF v5.1.4 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr 24 2026 16:42:12[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v0.2[0m
+[0;32mI (34) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (39) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (43) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (48) boot: Enabling RNG early entropy source...[0m
+[0;32mI (53) boot: Partition Table:[0m
+[0;32mI (57) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (64) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (72) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (79) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (87) boot: End of partition table[0m
+[0;32mI (91) esp_image: segment 0: paddr=00010020 vaddr=3c0a0020 size=273ech (160748) map[0m
+[0;32mI (128) esp_image: segment 1: paddr=00037414 vaddr=3fc99300 size=04648h ( 17992) load[0m
+[0;32mI (132) esp_image: segment 2: paddr=0003ba64 vaddr=40374000 size=045b4h ( 17844) load[0m
+[0;32mI (138) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=99878h (628856) map[0m
+[0;32mI (255) esp_image: segment 4: paddr=000d98a0 vaddr=403785b4 size=10cc4h ( 68804) load[0m
+[0;32mI (279) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (280) boot: Disabling RNG early entropy source...[0m
+[0;32mI (291) cpu_start: Multicore app[0m
+[0;32mI (291) cpu_start: Pro cpu up.[0m
+[0;32mI (292) cpu_start: Starting app cpu, entry point is 0x4037558c[0m
+[0;32mI (0) cpu_start: App cpu up.[0m
+[0;32mI (309) cpu_start: Pro cpu start user code[0m
+[0;32mI (310) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (310) cpu_start: Application information:[0m
+[0;32mI (313) cpu_start: Project name:     esp_photo_frame[0m
+[0;32mI (318) cpu_start: App version:      1[0m
+[0;32mI (323) cpu_start: Compile time:     Apr 24 2026 19:08:45[0m
+[0;32mI (329) cpu_start: ELF file SHA256:  6eb6ac45d78a5928...[0m
+[0;32mI (335) cpu_start: ESP-IDF:          v5.1.4[0m
+[0;32mI (340) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (344) cpu_start: Max chip rev:     v0.99 [0m
+[0;32mI (349) cpu_start: Chip rev:         v0.2[0m
+[0;32mI (354) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (361) heap_init: At 3FCA1410 len 00048300 (288 KiB): DRAM[0m
+[0;32mI (367) heap_init: At 3FCE9710 len 00005724 (21 KiB): STACK/DRAM[0m
+[0;32mI (374) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (380) heap_init: At 600FE010 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (387) spi_flash: detected chip: boya[0m
+[0;32mI (391) spi_flash: flash io: dio[0m
+[0;33mW (395) spi_flash: Detected size(16384k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (408) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (415) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (422) app_start: Starting scheduler on CPU0[0m
+[0;32mI (427) app_start: Starting scheduler on CPU1[0m
+[0;32mI (427) main_task: Started on CPU0[0m
+[0;32mI (437) main_task: Calling app_main()[0m
+[0;32mI (467) main: Starting ESP Photo Frame Application[0m
+[0;32mI (467) main: Initializing SD Card...[0m
+[0;32mI (467) gpio: GPIO[5]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (477) SD_CARD: Initializing SD card via SPI[0m
+[0;32mI (477) gpio: GPIO[9]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (487) sdspi_transaction: cmd=52, R1 response: command CRC error[0m
+[0;31mE (497) sdmmc_io: sdmmc_io_reset: unexpected return: 0x109[0m
+[0;31mE (497) vfs_fat_sdmmc: sdmmc_card_init failed (0x109).[0m
+[0;32mI (507) gpio: GPIO[9]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;31mE (517) SD_CARD: Failed to mount SD card VFS FAT (error ESP_ERR_INVALID_CRC)[0m
+[0;32mI (527) main: Initializing LCD...[0m
+[0;32mI (527) LCD_DISPLAY: Install panel IO[0m
+[0;32mI (527) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (537) LCD_DISPLAY: Install ST7789 panel driver[0m
+[0;32mI (547) gpio: GPIO[7]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (677) main: Initializing WiFi AP...[0m
+[0;32mI (677) pp: pp rom version: e7ae62f[0m
+[0;32mI (677) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (687) wifi:wifi driver task: 3fcac554, prio:23, stack:6656, core=0[0m
+[0;32mI (687) wifi:wifi firmware version: 3ce09e5[0m
+[0;32mI (687) wifi:wifi certification version: v7.0[0m
+[0;32mI (687) wifi:config NVS flash: enabled[0m
+[0;32mI (697) wifi:config nano formating: disabled[0m
+[0;32mI (697) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (697) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (707) wifi:Init management short buffer num: 32[0m
+[0;32mI (707) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (717) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (717) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (717) wifi:Init static rx buffer num: 10[0m
+[0;32mI (727) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (727) wifi_init: rx ba win: 6[0m
+[0;32mI (737) wifi_init: tcpip mbox: 32[0m
+[0;32mI (737) wifi_init: udp mbox: 6[0m
+[0;32mI (737) wifi_init: tcp mbox: 6[0m
+[0;32mI (747) wifi_init: tcp tx win: 5760[0m
+[0;32mI (747) wifi_init: tcp rx win: 5760[0m
+[0;32mI (757) wifi_init: tcp mss: 1440[0m
+[0;32mI (757) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (757) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (767) phy_init: phy_version 670,b7bc9b9,Apr 30 2024,10:54:13[0m
+[0;32mI (817) wifi:mode : softAP (ec:da:3b:44:51:e9)[0m
+[0;32mI (817) wifi:Total power save buffer number: 16[0m
+[0;32mI (817) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (817) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (817) wifi_ap: wifi_init_softap finished. SSID:ESP_PHOTO_FRAME password:li123456a channel:1[0m
+[0;32mI (817) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1[0m
+[0;32mI (837) main: Starting HTTP Server...[0m
+[0;32mI (837) image_server: Starting HTTP server on port: '80'[0m
+[0;32mI (847) image_server: HTTP server started. Ready to receive images at /upload.[0m
+Name: SS04G
+Type: SDSC
+Speed: 20.00 MHz (limit: 20.00 MHz)
+Size: 481MB
+CSD: ver=1, sector_size=512, capacity=985088 read_bl_len=10
+SSR: bus_width=1
+[0;32mI (927) main: Initializing LCD...[0m
+[0;32mI (927) LCD_DISPLAY: Install panel IO[0m
+[0;32mI (937) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (947) LCD_DISPLAY: Install ST7789 panel driver[0m
+[0;32mI (947) gpio: GPIO[7]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (1077) main: Initializing WiFi AP...[0m
+[0;32mI (1077) pp: pp rom version: e7ae62f[0m
+[0;32mI (1077) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (1087) wifi:wifi driver task: 3fcb8688, prio:23, stack:6656, core=0[0m
+[0;32mI (1087) wifi:wifi firmware version: 3ce09e5[0m
+[0;32mI (1087) wifi:wifi certification version: v7.0[0m
+[0;32mI (1087) wifi:config NVS flash: enabled[0m
+[0;32mI (1097) wifi:config nano formating: disabled[0m
+[0;32mI (1097) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (1107) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (1107) wifi:Init management short buffer num: 32[0m
+[0;32mI (1107) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (1117) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (1117) wifi:Init static rx buffer size: 1600[0m

@@ -1,0 +1,5 @@
+[0;33m--- Warning: GDB cannot open serial ports accessed as COMx[0m
+[0;33m--- Using \\.\COM13 instead...[0m
+[0;33m--- esp-idf-monitor 1.7.0 on \\.\COM13 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0m--- 0x4037558c: [0;33mcall_start_cpu1[0m[0m at [0;32mD:/esp-idf/ESP/v5.1.4/esp-idf/components/esp_system/port/cpu_start.c[0m[0m:[1;31m159[0m

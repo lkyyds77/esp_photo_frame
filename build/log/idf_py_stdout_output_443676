@@ -1,0 +1,74 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce3818,len:0x1750
+load:0x403c9700,len:0x4
+load:0x403c9704,len:0xc00
+load:0x403cc700,len:0x2e0c
+entry 0x403c9908
+[0;32mI (27) boot: ESP-IDF v5.1.4 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr 24 2026 16:42:12[0m
+[0;32mI (27) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v0.2[0m
+[0;32mI (34) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (39) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (43) boot.esp32s3: SPI Flash Size : 2MB[0m
+[0;32mI (48) boot: Enabling RNG early entropy source...[0m
+[0;32mI (53) boot: Partition Table:[0m
+[0;32mI (57) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (64) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (72) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (79) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (87) boot: End of partition table[0m
+[0;32mI (91) esp_image: segment 0: paddr=00010020 vaddr=3c030020 size=0f668h ( 63080) map[0m
+[0;32mI (111) esp_image: segment 1: paddr=0001f690 vaddr=3fc93900 size=00988h (  2440) load[0m
+[0;32mI (111) esp_image: segment 2: paddr=00020020 vaddr=42000020 size=2f414h (193556) map[0m
+[0;32mI (151) esp_image: segment 3: paddr=0004f43c vaddr=3fc94288 size=01fc8h (  8136) load[0m
+[0;32mI (153) esp_image: segment 4: paddr=0005140c vaddr=40374000 size=0f878h ( 63608) load[0m
+[0;32mI (177) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (177) boot: Disabling RNG early entropy source...[0m
+[0;32mI (189) cpu_start: Multicore app[0m
+[0;32mI (189) cpu_start: Pro cpu up.[0m
+[0;32mI (189) cpu_start: Starting app cpu, entry point is 0x40375490[0m
+[0;32mI (0) cpu_start: App cpu up.[0m
+[0;32mI (207) cpu_start: Pro cpu start user code[0m
+[0;32mI (207) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (207) cpu_start: Application information:[0m
+[0;32mI (210) cpu_start: Project name:     esp_photo_frame[0m
+[0;32mI (216) cpu_start: App version:      1[0m
+[0;32mI (220) cpu_start: Compile time:     Apr 24 2026 19:08:45[0m
+[0;32mI (226) cpu_start: ELF file SHA256:  8109fb6037de3e23...[0m
+[0;32mI (232) cpu_start: ESP-IDF:          v5.1.4[0m
+[0;32mI (237) cpu_start: Min chip rev:     v0.0[0m
+[0;32mI (242) cpu_start: Max chip rev:     v0.99 [0m
+[0;32mI (247) cpu_start: Chip rev:         v0.2[0m
+[0;32mI (252) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (259) heap_init: At 3FC96B78 len 00052B98 (330 KiB): DRAM[0m
+[0;32mI (265) heap_init: At 3FCE9710 len 00005724 (21 KiB): STACK/DRAM[0m
+[0;32mI (272) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (278) heap_init: At 600FE010 len 00001FD8 (7 KiB): RTCRAM[0m
+[0;32mI (285) spi_flash: detected chip: boya[0m
+[0;32mI (289) spi_flash: flash io: dio[0m
+[0;33mW (292) spi_flash: Detected size(16384k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (306) sleep: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (313) sleep: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (320) app_start: Starting scheduler on CPU0[0m
+[0;32mI (325) app_start: Starting scheduler on CPU1[0m
+[0;32mI (325) main_task: Started on CPU0[0m
+[0;32mI (335) main_task: Calling app_main()[0m
+[0;32mI (365) main: Starting ESP Photo Frame Application[0m
+[0;32mI (365) main: Initializing SD Card...[0m
+[0;32mI (365) gpio: GPIO[41]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 [0m
+[0;32mI (375) SD_CARD: Initializing SD card via SPI[0m
+[0;32mI (375) gpio: GPIO[10]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;31mE (585) sdmmc_sd: sdmmc_init_sd_if_cond: send_if_cond (1) returned 0x108[0m
+[0;31mE (585) vfs_fat_sdmmc: sdmmc_card_init failed (0x108).[0m
+[0;32mI (585) gpio: GPIO[10]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;31mE (595) SD_CARD: Failed to mount SD card VFS FAT (error ESP_ERR_INVALID_RESPONSE)[0m
+[0;32mI (605) main: Initializing LCD...[0m
+[0;32mI (605) LCD_DISPLAY: Install panel IO[0m
+[0;32mI (605) gpio: GPIO[40]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
+[0;32mI (615) LCD_DISPLAY: Install ST7789 panel driver[0m
+[0;32mI (625) gpio: GPIO[39]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 [0m
