@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp_photo_frame",
-    "project_version":    "1",
+    "project_version":    "f2088a1-dirty",
     "project_path":       "D:/ESP32-S3/esp_photo_frame",
     "idf_path":           "D:/esp-idf/ESP/v5.1.4/esp-idf",
     "build_dir":          "D:/ESP32-S3/esp_photo_frame/build",
@@ -790,7 +790,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "D:/ESP32-S3/esp_photo_frame/build/esp-idf/main/libmain.a",
-            "sources": [ "D:/ESP32-S3/esp_photo_frame/main/lcd_display.c", "D:/ESP32-S3/esp_photo_frame/main/sd_card.c", "D:/ESP32-S3/esp_photo_frame/main/hardware_config.c", "D:/ESP32-S3/esp_photo_frame/main/main.c", "D:/ESP32-S3/esp_photo_frame/main/wifi_ap.c", "D:/ESP32-S3/esp_photo_frame/main/image_server.c" ],
+            "sources": [ "D:/ESP32-S3/esp_photo_frame/main/app_context.c", "D:/ESP32-S3/esp_photo_frame/main/lcd_display.c", "D:/ESP32-S3/esp_photo_frame/main/sd_card.c", "D:/ESP32-S3/esp_photo_frame/main/hardware_config.c", "D:/ESP32-S3/esp_photo_frame/main/main.c", "D:/ESP32-S3/esp_photo_frame/main/wifi_ap.c", "D:/ESP32-S3/esp_photo_frame/main/image_server.c" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {

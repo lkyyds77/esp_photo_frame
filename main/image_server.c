@@ -5,6 +5,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "app_context.h"
+
 static const char *TAG = "image_server";
 
 static uint8_t current_photo_idx = 0; // 用于实现最多10张图片的轮换
@@ -20,12 +22,36 @@ static esp_err_t upload_image_post_handler(httpd_req_t *req)
 {
     ESP_LOGI(TAG, "Receiving image data...");
 
+    if (!g_app_events || !g_shared_bus_mutex) {
+        ESP_LOGE(TAG, "Sync objects not initialized");
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    EventBits_t bits = xEventGroupGetBits(g_app_events);
+    if ((bits & APP_EVT_SD_READY) == 0) {
+        httpd_resp_set_status(req, "503 Service Unavailable");
+        httpd_resp_sendstr(req, "SD card not ready");
+        return ESP_FAIL;
+    }
+
     char filename[32];
     snprintf(filename, sizeof(filename), "/sdcard/photo_%d.rgb", current_photo_idx);
 
-    FILE *f = fopen(filename, "wb");
+    char tmp_filename[32];
+    snprintf(tmp_filename, sizeof(tmp_filename), "/sdcard/photo_%d.tmp", current_photo_idx);
+
+    // Time-division multiplexing on shared SPI bus: SD write and LCD refresh cannot overlap
+    if (xSemaphoreTake(g_shared_bus_mutex, pdMS_TO_TICKS(15000)) != pdTRUE) {
+        httpd_resp_set_status(req, "503 Service Unavailable");
+        httpd_resp_sendstr(req, "SPI bus busy, try again later");
+        return ESP_FAIL;
+    }
+
+    FILE *f = fopen(tmp_filename, "wb");
     if (!f) {
-        ESP_LOGE(TAG, "Failed to open file %s for writing. Error: %s", filename, strerror(errno));
+        ESP_LOGE(TAG, "Failed to open file %s for writing. Error: %s", tmp_filename, strerror(errno));
+        xSemaphoreGive(g_shared_bus_mutex);
         httpd_resp_send_500(req);
         return ESP_FAIL;
     }
@@ -41,6 +67,7 @@ static esp_err_t upload_image_post_handler(httpd_req_t *req)
                 continue;
             }
             fclose(f);
+            xSemaphoreGive(g_shared_bus_mutex);
             return ESP_FAIL;
         }
 
@@ -50,7 +77,20 @@ static esp_err_t upload_image_post_handler(httpd_req_t *req)
     
     fclose(f);
 
+    // Atomically publish: remove old and rename temp to final, so display task never sees a partial file
+    remove(filename);
+    if (rename(tmp_filename, filename) != 0) {
+        ESP_LOGE(TAG, "Failed to rename %s -> %s. Error: %s", tmp_filename, filename, strerror(errno));
+        xSemaphoreGive(g_shared_bus_mutex);
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    xSemaphoreGive(g_shared_bus_mutex);
+
     ESP_LOGI(TAG, "Image successfully saved as %s", filename);
+
+    xEventGroupSetBits(g_app_events, APP_EVT_NEW_PHOTO);
 
     // 每次传完照片后，索引加 1，最多支持 10 张照片 (0~9)，如果存满则会覆盖最老的，形成循环。
     current_photo_idx = (current_photo_idx + 1) % 10;

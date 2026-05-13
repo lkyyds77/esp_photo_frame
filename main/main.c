@@ -9,8 +9,79 @@
 #include "sd_card.h"
 #include "lcd_display.h"
 #include "hardware_config.h"
+#include "app_context.h"
+
+#include "esp_heap_caps.h"
 
 static const char *TAG = "main";
+
+static void photo_slideshow_task(void *arg)
+{
+    (void)arg;
+
+    const size_t frame_bytes = (size_t)LCD_H_RES * (size_t)LCD_V_RES * 2;
+    uint8_t *img_buf = (uint8_t *)heap_caps_malloc(frame_bytes, MALLOC_CAP_DMA);
+    if (!img_buf) {
+        ESP_LOGE(TAG, "Failed to allocate DMA-capable image buffer (%u bytes)", (unsigned)frame_bytes);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    // Wait until SD and LCD are both ready
+    xEventGroupWaitBits(g_app_events, APP_EVT_SD_READY | APP_EVT_LCD_READY, pdFALSE, pdTRUE, portMAX_DELAY);
+
+    while (1) {
+        bool photo_found = false;
+
+        for (int i = 0; i < 10; i++) {
+            char filename[32];
+            snprintf(filename, sizeof(filename), "/sdcard/photo_%d.rgb", i);
+
+            if (xSemaphoreTake(g_shared_bus_mutex, pdMS_TO_TICKS(30000)) != pdTRUE) {
+                continue;
+            }
+
+            FILE *f = fopen(filename, "rb");
+            if (!f) {
+                xSemaphoreGive(g_shared_bus_mutex);
+                continue;
+            }
+
+            photo_found = true;
+
+            size_t bytes_read = fread(img_buf, 1, frame_bytes, f);
+            fclose(f);
+            xSemaphoreGive(g_shared_bus_mutex);
+
+            if (bytes_read == 0) {
+                continue;
+            }
+            if (bytes_read < frame_bytes) {
+                memset(img_buf + bytes_read, 0, frame_bytes - bytes_read);
+            }
+
+            // LCD refresh via SPI DMA (no per-pixel CPU endianness swap)
+            if (xSemaphoreTake(g_shared_bus_mutex, pdMS_TO_TICKS(30000)) == pdTRUE) {
+                esp_err_t err = lcd_draw_bitmap_dma(0, 0, LCD_H_RES, LCD_V_RES, img_buf, pdMS_TO_TICKS(5000));
+                xSemaphoreGive(g_shared_bus_mutex);
+                if (err != ESP_OK) {
+                    ESP_LOGE(TAG, "LCD flush failed: %s", esp_err_to_name(err));
+                }
+            }
+
+            // Show each photo up to 5s, but wake early if a new photo arrives
+            EventBits_t bits = xEventGroupWaitBits(g_app_events, APP_EVT_NEW_PHOTO, pdTRUE, pdFALSE, pdMS_TO_TICKS(5000));
+            if (bits & APP_EVT_NEW_PHOTO) {
+                break;
+            }
+        }
+
+        if (!photo_found) {
+            // Avoid tight loop when SD is empty
+            xEventGroupWaitBits(g_app_events, APP_EVT_NEW_PHOTO, pdTRUE, pdFALSE, pdMS_TO_TICKS(1000));
+        }
+    }
+}
 
 void app_main(void)
 {
@@ -24,67 +95,47 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Starting ESP Photo Frame Application");
 
-    // Initialize SD card
-    ESP_LOGI(TAG, "Initializing SD Card...");
-    sd_card_init();
-
-    // Initialize LCD
-    ESP_LOGI(TAG, "Initializing LCD...");
-    lcd_display_init();
-
-    // 2. 初始化 WiFi 热点
-    ESP_LOGI(TAG, "Initializing WiFi AP...");
-    wifi_init_softap();
-
-    // 3. 启动 HTTP 图像接收服务器
-    ESP_LOGI(TAG, "Starting HTTP Server...");
-    start_image_server();
-
-    // 4. Main Loop: Read /sdcard/photo.rgb and render to LCD
-    uint8_t *img_buf = malloc(LCD_H_RES * LCD_V_RES * 2); // Assuming roughly RGB565 memory size for a frame
-    if (!img_buf) {
-        ESP_LOGE(TAG, "Failed to allocate memory for image buffer");
+    app_context_init();
+    if (!g_app_events || !g_shared_bus_mutex) {
+        ESP_LOGE(TAG, "Failed to init app sync objects");
         return;
     }
 
-    while (1) {
-        // ... (LCD render logic) ... 
-        bool photo_found = false;
-
-        // 遍历这10个名字的图片 photo_0.rgb 到 photo_9.rgb
-        for (int i = 0; i < 10; i++) {
-            char filename[32];
-            snprintf(filename, sizeof(filename), "/sdcard/photo_%d.rgb", i);
-
-            FILE *f = fopen(filename, "rb");
-            if (f) {
-                photo_found = true;
-                size_t expected_size = LCD_H_RES * LCD_V_RES * 2;
-                size_t bytes_read = fread(img_buf, 1, expected_size, f);
-                fclose(f); // 立刻关闭文件释放死锁，不要让文件句柄横跨后面的屏幕绘制时间
-                
-                if (bytes_read > 0) {
-                    if (bytes_read < expected_size) {
-                        memset(img_buf + bytes_read, 0, expected_size - bytes_read);
-                    }
-
-                    // 转换大小端 (Endianness swap)
-                    uint16_t *pixels = (uint16_t *)img_buf;
-                    for (int j = 0; j < LCD_H_RES * LCD_V_RES; j++) {
-                        pixels[j] = (pixels[j] >> 8) | (pixels[j] << 8);
-                    }
-
-                    lcd_draw_bitmap(0, 0, LCD_H_RES, LCD_V_RES, pixels);
-                }
-                
-                // 每张照片显示5秒钟
-                vTaskDelay(pdMS_TO_TICKS(5000));
-            }
-        }
-        
-        // 如果一张照片也没有找到，休息1秒钟再试，避免死循环触发看门狗导致无限重启
-        if (!photo_found) {
-            vTaskDelay(pdMS_TO_TICKS(1000));
-        }
+    // Initialize SD card
+    ESP_LOGI(TAG, "Initializing SD Card...");
+    esp_err_t err = sd_card_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "SD init failed: %s", esp_err_to_name(err));
+        return;
     }
+    xEventGroupSetBits(g_app_events, APP_EVT_SD_READY);
+
+    // Initialize LCD
+    ESP_LOGI(TAG, "Initializing LCD...");
+    err = lcd_display_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "LCD init failed: %s", esp_err_to_name(err));
+        return;
+    }
+    xEventGroupSetBits(g_app_events, APP_EVT_LCD_READY);
+
+    // 2. 初始化 WiFi 热点
+    ESP_LOGI(TAG, "Initializing WiFi AP...");
+    err = wifi_init_softap();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "WiFi AP init failed: %s", esp_err_to_name(err));
+        return;
+    }
+    xEventGroupSetBits(g_app_events, APP_EVT_WIFI_READY);
+
+    // 3. 启动 HTTP 图像接收服务器
+    ESP_LOGI(TAG, "Starting HTTP Server...");
+    err = start_image_server();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "HTTP server start failed: %s", esp_err_to_name(err));
+        return;
+    }
+
+    // Display/SD/LCD pipeline task (pin to core 1 to reduce contention with Wi-Fi stack)
+    xTaskCreatePinnedToCore(photo_slideshow_task, "photo_slideshow", 8192, NULL, 5, NULL, 1);
 }
